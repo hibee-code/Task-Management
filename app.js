@@ -30,40 +30,27 @@ let tasks = [
 
 
 
-app.get("/tasks", async (req, res) => {
-  try {
-    return res.json({
-      success: true,
-      message: "All tasks is successfully extracted",
-      tasks: tasks,
-    });
-  } catch (error) {
-    return res.sendStatus(400).json();
-  }
-});
 
-
-app.get("/task/:id", async (req, res) => {
+app.post("/tasks", async (req, res) => {
   try {
-    const { id } = req.params;
-    const taskId = Number(id);
-    const task = tasks.find((task) => task.id === taskId);
-    if (!task) {
-      return res.status(404).json({ error: "Task not found" });
+    const { title, isComplete } = req.body;
+    if (!(title && isComplete)) {
+      return res.status(400).json({ error: "Invalid task data" });
     }
-    res.json({ 
-      success: true, 
-      message: " your task has bee retrieved", 
-      task : task
+
+    const newTask = {
+      id: tasks.length + 1,
+      title,
+      isCompleted: true,
+    };
+    tasks.push(newTask);
+    res.status(201).json({
+      success: true,
+      mesage: "a new task has been created",
+      task: newTask,
     });
-
-  } catch (error) {
-    return res.sendStatus(400).json();
-  }
+  } catch (error) {}
 });
-
-
-
 
 app.listen(Port, () => {
   console.log(`server running on ${Port}`);
