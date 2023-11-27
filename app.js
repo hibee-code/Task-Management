@@ -1,42 +1,64 @@
-import express from "express";
+import express from "express"
 
 const app = express();
 const Port = 3000;
 
 app.use(express.json());
 
-let user = [];
-let task = [];
+
+let tasks = [
+  {
+    id: 1,
+    title: "introduction to TaskMgt App",
+    isComplete: true
+  },
+  {
+    id: 2,
+    title: "introduction to the Task",
+    isComplete: true
+  },
+  {
+    id: 3,
+    title: "introduction to TaskMgt App",
+    isComplete: true
+  },
+  {
+    id: 4,
+    title: "introduction to TaskMgt App",
+    isComplete: true
+  },
+]
 
 
 
-//middleware for authentication
 
-// const authenticateToken = () => async (req, res, next) {
-//     const token =  await req.headers.authorization;
 
-//     if (!token) {
-//       return res.status(401).json({ message: 'Unauthorized - Token missing' });
-//     }
-// }
-
-app.post("/user/register", async (req, res) => {
+app.post("/tasks", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    if (!(username && email && password)) {
-      return res.status(400).json({
-        success: false,
-        message: "invalid credentials",
-      });
+    const { title, isComplete } = req.body;
+    if(!(title && isComplete)){
+      return res.status(400).json({ error: 'Invalid task data' });
     }
-    const newUser = { username, email, password };
-    user.push(newUser)
+
+    const newTask = {
+      id: tasks.length + 1,
+      title,
+      isCompleted: true
+    }
+    tasks.push(newTask)
+    res.status(201).json({ 
+      success: true,
+      mesage: "a new task has been created",
+      task: newTask
+    });
+    
   } catch (error) {
-    return res.send(400);
+    
   }
 });
 
-app.post("/user/login", async (req, res) => {});
+
+
 
 app.listen(Port, () => {
   console.log(`server running on ${Port}`);
