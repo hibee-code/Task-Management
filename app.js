@@ -30,27 +30,33 @@ let tasks = [
 
 
 
-
-app.post("/tasks", async (req, res) => {
+app.put("/task/:id", async (req, res) => {
   try {
+    const { id } = req.params;
     const { title, isComplete } = req.body;
-    if (!(title && isComplete)) {
-      return res.status(400).json({ error: "Invalid task data" });
+    const taskId = Number(id);
+    const task = tasks.find((task) => task.id === taskId);
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+    if (title) {
+      task.title = title;
     }
 
-    const newTask = {
-      id: tasks.length + 1,
-      title,
-      isCompleted: true,
-    };
-    tasks.push(newTask);
-    res.status(201).json({
+    if (isComplete) {
+      task.isComplete = isComplete;
+    }
+
+    return res.json({
       success: true,
-      mesage: "a new task has been created",
-      task: newTask,
+      message: " your task has been update!",
+      task: task,
     });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(404).json({ error: "Task not found" });
+  }
 });
+
 
 app.listen(Port, () => {
   console.log(`server running on ${Port}`);
