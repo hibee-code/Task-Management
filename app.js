@@ -1,64 +1,39 @@
-import express from "express"
+import express from "express";
 
 const app = express();
 const Port = 3000;
 
 app.use(express.json());
 
+let user = [];
 
-let tasks = [
-  {
-    id: 1,
-    title: "introduction to TaskMgt App",
-    isComplete: true
-  },
-  {
-    id: 2,
-    title: "introduction to the Task",
-    isComplete: true
-  },
-  {
-    id: 3,
-    title: "introduction to TaskMgt App",
-    isComplete: true
-  },
-  {
-    id: 4,
-    title: "introduction to TaskMgt App",
-    isComplete: true
-  },
-]
-
-
-
-
-
-app.post("/tasks", async (req, res) => {
+app.post("/user/register", async (req, res) => {
   try {
-    const { title, isComplete } = req.body;
-    if(!(title && isComplete)){
-      return res.status(400).json({ error: 'Invalid task data' });
+    const { username, email, password } = req.body;
+
+    if (!(username && email && password)) {
+      return res.status(400).json({ message: "wrong credentials" });
+    }
+    if (user.some((user) => user.username === username)) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+    if (user.some((email) => user.email === email)) {
+      return res.status(400).json({ message: "email already exist" });
+    }
+    if (password.length < 7) {
+      return res.status(400).json({ message: "password not complete" });
     }
 
-    const newTask = {
-      id: tasks.length + 1,
-      title,
-      isCompleted: true
-    }
-    tasks.push(newTask)
-    res.status(201).json({ 
-      success: true,
-      mesage: "a new task has been created",
-      task: newTask
+    const newUser = { username, email, password };
+    user.push(newUser);
+    res.status(201).json({
+      message: "User registered successfully",
+      newUser,
     });
-    
   } catch (error) {
-    
+    return res.sendStatus(400).json();
   }
 });
-
-
-
 
 app.listen(Port, () => {
   console.log(`server running on ${Port}`);
